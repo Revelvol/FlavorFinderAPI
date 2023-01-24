@@ -1,8 +1,11 @@
 from .serializers import (RecipeSerializer,
                           RecipeDetailSerializer,
                           TagSerializer,
-                          IngredientSerializer)
+                          IngredientSerializer,
+                          RecipeImageSerializer)
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from base.models import (Recipe,
@@ -24,11 +27,25 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list':
             return RecipeSerializer
+        elif self.action == 'upload_image':
+            return RecipeImageSerializer
         return self.serializer_class
 
     def perform_create(self, serializer):
         """Create a new recipe."""
         serializer.save(user=self.request.user)
+
+    @action(methods=['POST'], detail=True, url_path='upload-image')
+    def upload_image(self, request, pk=None):
+        """Upload an image to recipe."""
+        recipe = self.get_object()
+        serializer = self.get_serializer(recipe, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, *args, **kwargs):
         recipe = self.get_object()
@@ -37,41 +54,29 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-class TagsViewSet(viewsets.ModelViewSet):
+class BaseRecipeAttrViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user).order_by('-name')
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def destroy(self, request, *args, **kwargs):
+        item = self.get_object()
+        if item.user != self.request.user:
+            raise status.HTTP_404_NOT_FOUND
+        return super().destroy(request, *args, **kwargs)
+
+
+class TagsViewSet(BaseRecipeAttrViewSet):
     """View for manage recipe APIs."""
     serializer_class = TagSerializer
     queryset = Tag.objects.all()
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user).order_by('-name')
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def destroy(self, request, *args, **kwargs):
-        tag = self.get_object()
-        if tag.user != self.request.user:
-            raise status.HTTP_404_NOT_FOUND
-        return super().destroy(request, *args, **kwargs)
 
 
-class IngredientViewSet(viewsets.ModelViewSet):
+class IngredientViewSet(BaseRecipeAttrViewSet):
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return self.queryset.filter(user=self.request.user).order_by('-name')
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def destroy(self, request, *args, **kwargs):
-        ingredient = self.get_object()
-        if ingredient.user != self.request.user:
-            raise status.HTTP_404_NOT_FOUND
-        return super().destroy(request, *args, **kwargs)
-

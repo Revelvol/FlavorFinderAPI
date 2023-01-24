@@ -5,6 +5,15 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.conf import settings
+import uuid
+import os
+
+
+def recipe_image_file_path(instance, filename):
+    """splittextnya buat dapet etententixion, ex : .pdf, .png etc """
+    ext = os.path.splitext(filename)[1]
+    filename = f'{uuid.uuid4()}{ext}'
+    return os.path.join('uploads', 'recipe', filename)
 
 
 class UserManager(BaseUserManager):
@@ -49,8 +58,9 @@ class Recipe(models.Model):
     time_minutes = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2)
     link = models.CharField(max_length=255, blank=True)
-    tags = models.ManyToManyField('Tag')
-    ingredients = models.ManyToManyField('Ingredient')
+    tags = models.ManyToManyField('Tag', blank=True)
+    ingredients = models.ManyToManyField('Ingredient', blank=True)
+    image = models.ImageField(null=True, upload_to=recipe_image_file_path)
 
     def __str__(self):
         return self.title

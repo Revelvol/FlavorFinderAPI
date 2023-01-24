@@ -5,8 +5,7 @@ from django.db.utils import OperationalError
 from unittest.mock import patch
 from psycopg2 import OperationalError as Psycopg2Error
 from decimal import Decimal
-from .models import Recipe, Tag, Ingredient
-
+from .models import Recipe, Tag, Ingredient, recipe_image_file_path
 
 def create_user():
     email = 'test@example.com'
@@ -108,3 +107,12 @@ class ModelTest(TestCase):
         user = create_user()
         ingredient = Ingredient.objects.create(user=user, name='ingredient1')
         self.assertEqual(str(ingredient), ingredient.name)
+
+    @patch('base.models.uuid.uuid4')
+    def test_recipe_file_name_uuid(self, mock_uuid):
+        """Test generating image path."""
+        uuid = 'test-uuid'
+        mock_uuid.return_value = uuid
+        file_path = recipe_image_file_path(None, 'example.jpg')
+
+        self.assertEqual(file_path, f'uploads/recipe/{uuid}.jpg')
