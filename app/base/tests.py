@@ -5,7 +5,18 @@ from django.db.utils import OperationalError
 from unittest.mock import patch
 from psycopg2 import OperationalError as Psycopg2Error
 from decimal import Decimal
-from .models import Recipe
+from .models import Recipe, Tag, Ingredient
+
+
+def create_user():
+    email = 'test@example.com'
+    password = 'testpassword1'
+    user = get_user_model().objects.create_user(
+        email=email,
+        password=password,
+        name='blank',
+    )
+    return user
 
 
 @patch('base.management.commands.wait_for_db.Command.check')
@@ -79,9 +90,21 @@ class ModelTest(TestCase):
         recipe = Recipe.objects.create(
             user=user,
             title='Sample recipe name',
-            time_minute=5,
+            time_minutes=5,
             price=Decimal('5.50'),
-            description='Sample receipe description.',
+            description='Sample recipe description.',
         )
 
         self.assertEqual(str(recipe), recipe.title)
+
+    def test_create_tag(self):
+        """Test creating a tag is successful."""
+        user = create_user()
+        tag = Tag.objects.create(user=user, name='Tag1')
+
+        self.assertEqual(str(tag), tag.name)
+
+    def test_create_ingredient(self):
+        user = create_user()
+        ingredient = Ingredient.objects.create(user=user, name='ingredient1')
+        self.assertEqual(str(ingredient), ingredient.name)
