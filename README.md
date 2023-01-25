@@ -36,4 +36,4 @@ Linting is done automatically on every push and pull request using GitHub Action
 - [Postgres](https://www.postgresql.org/) - Used as the database
 - [Swagger UI](https://swagger.io/tools/swagger-ui/) - Used for API documentation
 
-![img.png](img.png)
+![image](https://user-images.githubusercontent.com/111274957/214585904-cb95140a-6eb3-4439-bf1f-b0ce4c8a2178.png)
