@@ -20,6 +20,7 @@ services:
       - DB_NAME=ffdb
       - DB_USER=revel
       - DB_PASS=changeme
+      - DEBUG=1
     depends_on:
       - db
 
