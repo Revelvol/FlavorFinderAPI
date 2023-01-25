@@ -1,17 +1,12 @@
 # Flavorfinder
 
-A Django intermediate REST API project that utilizes Test Driven Development practices and the following technologies:
-- Django framework
-- Docker for setting up the project
-- GitHub Actions for linting and testing
-- Django REST framework
-- Postgres database
-- Swagger UI for API documentation
+A Django intermediate REST API project that utilizes Test Driven Development practices aspart of [udemy course](https://www.udemy.com/course/django-python-advanced/)
 
-
-This was part of [udemy course](https://www.udemy.com/course/django-python-advanced/)
-## Purpose
-This project provides a functioning API for creating and managing users, tags, ingredients, and recipes. It also allows for filtering and uploading images through the API.
+## Features
+This project provides a functioning API for storing recipe data for each user.
+1. Create and manage users api 
+2. Create and manage recipe, tags, and ingredient api + filter based on tags/ingredient 
+3. Upload recipe image api 
 
 ## Getting Started
 1. Make sure you have [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/) installed on your machine.
