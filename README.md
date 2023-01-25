@@ -1,4 +1,4 @@
-# Flavorfinder
+# Recipefinder
 
 A Django intermediate REST API project that utilizes Test Driven Development practices aspart of [udemy course](https://www.udemy.com/course/django-python-advanced/)
 
